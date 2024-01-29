@@ -99,6 +99,12 @@ sol(:,Y1)=[];
 
 
 
+%Finding OPTIMAL SOLUTION
+x1=sol(1,:);
+x2=sol(2,:);
+var=5*x1+4*x2;         % objective fnxn
+[X,Y]=max(var);
+optimalSol=sol(:,Y);
 
 
 
