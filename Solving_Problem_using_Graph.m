@@ -42,8 +42,8 @@ for i=1:6
         A2=cons(j,:);
         B2=rhs(j,:);
         
-        A3=[A1,A2];
-        B3=[B1,B2];
+        A3=[A1;A2];
+        B3=[B1;B2];
         X=inv(A3)*B3;
         sol=[sol X];
     end
