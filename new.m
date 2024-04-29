@@ -36,7 +36,7 @@ while exit==0
         for i=1:size(A,1);
             if i~=minrowi
                 k=A(i,minindex);
-                A(i,:)=A(i,:)-(A(minrowi,:)*k);
+                A(i,:)=A(i,:)-(k.*A(minrowi,:));
             end
         end
         zjcj=cost(bv)*A-cost;
