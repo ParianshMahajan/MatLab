@@ -1,51 +1,49 @@
-clc
 clear all
-cost = [-1 3 -2 0 0 0];
-a=[3 -1 2 1 0 0;-2 4 0 0 1 0;-4 3 8 0 0 1];
-b=[7;12;10];
-bv=[4 5 6];
-nov=size(a,2);
-zjcj=cost(bv)*a-cost;
-sol=cost(bv)*b;
-exit=0;
-while exit==0
-    if(all(zjcj>=0))
-        fprintf('\nOptimal Sol Reached with cost %d\n',sol);
-        exit=1;
-    else
-        fprintf('-------------------------------------------------------------------');
-        [minvalue,minindex]=min(zjcj);
-        check= zeros(1,size(bv,2));
-        if(all a(:,minindex)<=0)
-            fprintf('\nUnbounded %d\n');
+cost=[2 -5 0 0 0];
+a=[7 4 1 0; -3 5 0 1];
+b=[12; 15];
+A=[a b];
+Var={'x1' , 'x2' , 's1' , 's2' , 'sol'}
+bv=[3 4];
+zjcj=cost(bv)*A-cost;
+simplex_table=[A; zjcj]
+array2table(simplex_table,'Variablename',Var)
+Run=true;
+while Run
+    if any(zjcj(1:end-1)<0)
+        fprintf('The current BFS is not optimal \n');
+        zc=zjcj(1:end-1);
+         [minval,minindex]=min(zc);
+        if all(A(:,minindex)<=0)
+            fprintf("Unbounded\n");
             exit=1;
         else
-            for i=1:size(bv,2)
-                if(a(i,minindex)<=0)
-                check(i)=inf;
-                else
-                check(i)=b(i)/a(i,minindex);
+            sol=A(:,end);
+            column=A(:,minindex);
+            for i=1:size(A,1);
+                if A(i,minindex)<=0
+                    ratio(i)=inf;
+                else   
+                    ratio(i)=sol(i)./column(i);
                 end
             end
+            [minrowv,minrowi]=min(ratio);
         end
-        [minrowv,minrowi]=min(check)
-        leave=bv(minrowi);
+        
         bv(minrowi)=minindex;
-        k=a(minrowi,minindex);
-        a(minrowi,:)=a(minrowi,:)/k;
-        b(minrowi)=b(minrowi)/k;
-        for i=1:size(bv,2)
+        k=A(minrowi,minindex);
+        A(minrowi,:)=A(minrowi,:)./k;
+        for i=1:size(A,1)
             if i~=minrowi
-                k=a(i,minindex);
-                a(i,:)=a(i,:)-(a(minrowi,:)*k);
-                b(i)=b(i)-(b(minrowi)*k);
+                k=A(i,minindex);
+                A(i,:)=A(i,:)-(A(minrowi,:).*k);
             end
         end
-        zjcj=cost(bv)*a-cost;
-        sol=cost(bv)*b;
-        temp=[zjcj,sol];
-        temp1=[a,b];
-        temp2=[temp;temp1];
-        array2table(temp2);
+        zjcj=cost(bv)*A-cost;
+        next_table=[zjcj;A];
+        array2table(next_table,'Variablename', Var)
+    else
+        Run=false;
+        fprintf('The final optimal value is %f \n' , zjcj(end));
     end
 end
